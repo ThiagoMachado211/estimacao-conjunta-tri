@@ -17,6 +17,9 @@ PASTA_RESULTADOS_ENEM = PASTA_RESULTADOS / "enem_2009"
 ARQUIVO_MICRODADOS_ENEM = PASTA_DADOS_ENEM / "MICRODADOS_ENEM_2009.csv"
 ARQUIVO_ITENS_ENEM = PASTA_DADOS_ENEM / "ITENS_PROVA_2009.csv"
 
+NROWS_TESTE = 100_000
+USAR_NROWS_TESTE = True
+
 # =========================
 # Controle de execução
 # =========================
@@ -32,20 +35,26 @@ USAR_AMOSTRA = True
 TAMANHO_AMOSTRA = 20000
 SEMENTE = 42
 
+MINIMO_RESPOSTAS_VALIDAS = 5
+
 # =========================
 # Modelo TRI
 # =========================
 
-MODELO_CALIBRACAO = "2PL"
-# Opções futuras:
-# "2PL"
-# "3PL_C_FIXO"
-# "3PL"
-
-C_FIXO = 0.20
+MODELO_CALIBRACAO = "3PL"
 
 MAX_ITER = 50
 TOL = 1e-4
+
+A_MIN = 0.01
+A_MAX = 5.00
+
+B_MIN = -4.00
+B_MAX = 4.00
+
+C_MIN = 0.01
+C_MAX = 0.35
+
 
 # =========================
 # EAP
