@@ -46,7 +46,7 @@ from codigo.preprocessamento.amostragem import (
     aplicar_amostragem,
 )
 
-from codigo.calibracao.calibracao_3pl_map import calibrar_itens_3pl_map
+from codigo.calibracao.calibracao_3pl_mml_em import calibrar_itens_3pl_mml_em
 
 from codigo.avaliacao.comparacao_parametros import comparar_parametros
 
@@ -72,6 +72,11 @@ from codigo.avaliacao.testes_diagnosticos import (
     correlacoes_diagnosticas,
     gerar_graficos_diagnosticos,
     salvar_tabelas_diagnosticas,
+)
+
+from codigo.avaliacao.comparacao_modelos import (
+    adicionar_resultado_modelo,
+    criar_tabela_comparativa,
 )
 
 
@@ -283,10 +288,17 @@ def main():
     print(df_matriz_amostra.head())
 
     print("---------------------------------------------------------------")
-    print("Iniciando calibração 3PL MAP dos itens...")
+    print("Iniciando calibração 3PL MML-EM dos itens...")
 
-    df_param_est, theta_inicial = calibrar_itens_3pl_map(
+    df_param_est = calibrar_itens_3pl_mml_em(
         df_matriz_amostra,
+        theta_min=THETA_MIN,
+        theta_max=THETA_MAX,
+        n_pontos=N_PONTOS_THETA,
+        media_prior=MEDIA_PRIOR,
+        desvio_prior=DESVIO_PRIOR,
+        max_iter=5,
+        tol=1e-4,
     )
 
     print("Calibração concluída.")
@@ -304,7 +316,7 @@ def main():
     PASTA_GRAFICOS.mkdir(parents=True, exist_ok=True)
 
     caminho_param_est = (
-        PASTA_RESULTADOS_ENEM / "parametros_estimados_3pl_map.csv"
+        PASTA_RESULTADOS_ENEM / "parametros_estimados_3pl_mml_em.csv"
     )
 
     df_param_est.to_csv(
@@ -324,11 +336,11 @@ def main():
     )
 
     caminho_param_comparados = (
-        PASTA_RESULTADOS_ENEM / "parametros_comparados_3pl_map.csv"
+        PASTA_RESULTADOS_ENEM / "parametros_comparados_3pl_mml_em.csv"
     )
 
     caminho_metricas_param = (
-        PASTA_RESULTADOS_ENEM / "metricas_parametros_3pl_map.csv"
+        PASTA_RESULTADOS_ENEM / "metricas_parametros_3pl_mml_em.csv"
     )
 
     df_param_comparados.to_csv(
@@ -427,7 +439,7 @@ def main():
     )
 
     caminho_proficiencias = (
-        PASTA_RESULTADOS_ENEM / "proficiencias_eap_3pl_map.csv"
+        PASTA_RESULTADOS_ENEM / "proficiencias_eap_3pl_mml_em.csv"
     )
 
     df_proficiencias.to_csv(
@@ -450,7 +462,7 @@ def main():
     print(df_metricas_proficiencias)
 
     caminho_metricas_proficiencias = (
-        PASTA_RESULTADOS_ENEM / "metricas_proficiencias_3pl_map.csv"
+        PASTA_RESULTADOS_ENEM / "metricas_proficiencias_3pl_mml_em.csv"
     )
 
     df_metricas_proficiencias.to_csv(
@@ -579,6 +591,53 @@ def main():
         )
 
     print("---------------------------------------------------------------")
+    print("Montando tabela comparativa dos modelos...")
+
+    corr_nota_theta = calcular_correlacao_segura(
+        df_proficiencias,
+        "NOTA_REAL",
+        "THETA_EAP",
+    )
+
+    resultados_modelos = []
+
+    resultados_modelos = adicionar_resultado_modelo(
+        resultados=resultados_modelos,
+        nome_modelo="3PL_MML_EM",
+        metricas_parametros=df_metricas_param,
+        corr_nota_theta=corr_nota_theta,
+        corr_theta_ref=corr_theta_est_ref,
+    )
+
+    df_comparativo_modelos = criar_tabela_comparativa(
+        resultados_modelos,
+    )
+
+    print("\n")
+    print("=" * 90)
+    print("COMPARAÇÃO ENTRE MODELOS")
+    print("=" * 90)
+
+    print(
+        df_comparativo_modelos.to_string(
+            index=False,
+            float_format=lambda x: f"{x:.6f}",
+        )
+    )
+
+    caminho_comparacao_modelos = (
+        PASTA_RESULTADOS_ENEM / "comparacao_modelos.csv"
+    )
+
+    df_comparativo_modelos.to_csv(
+        caminho_comparacao_modelos,
+        index=False,
+        encoding="utf-8-sig",
+    )
+
+    print(f"\nTabela comparativa salva em: {caminho_comparacao_modelos}")
+
+    print("---------------------------------------------------------------")
     print("Executando testes diagnósticos finais...")
 
     PASTA_DIAGNOSTICOS = PASTA_RESULTADOS_ENEM / "diagnosticos"
@@ -616,6 +675,83 @@ def main():
         df_proficiencias_ref,
         PASTA_DIAGNOSTICOS,
     )
+
+
+    print("\n")
+    print("=" * 80)
+    print("CORRELAÇÕES PRINCIPAIS")
+    print("=" * 80)
+
+    # --------------------------------------------------
+    # PARÂMETROS
+    # --------------------------------------------------
+
+    corr_a = df_metricas_param.loc[
+        df_metricas_param["PARAMETRO"] == "A",
+        "CORRELACAO"
+    ].iloc[0]
+
+    corr_b = df_metricas_param.loc[
+        df_metricas_param["PARAMETRO"] == "B",
+        "CORRELACAO"
+    ].iloc[0]
+
+    corr_c = df_metricas_param.loc[
+        df_metricas_param["PARAMETRO"] == "C",
+        "CORRELACAO"
+    ].iloc[0]
+
+    print("\nPARÂMETROS")
+    print("-" * 40)
+    print(f"Corr(A_REF, A_EST) = {corr_a:.6f}")
+    print(f"Corr(B_REF, B_EST) = {corr_b:.6f}")
+    print(f"Corr(C_REF, C_EST) = {corr_c:.6f}")
+
+    # --------------------------------------------------
+    # PROFICIÊNCIAS
+    # --------------------------------------------------
+
+    corr_theta_est_ref = calcular_correlacao_segura(
+        df_comparacao_theta_ref_est,
+        "THETA_EAP",
+        "THETA_EAP_REF"
+    )
+
+    corr_nota_theta = calcular_correlacao_segura(
+        df_proficiencias,
+        "NOTA_REAL",
+        "THETA_EAP"
+    )
+
+    corr_nota_theta_ref = calcular_correlacao_segura(
+        df_proficiencias_ref,
+        "NOTA_REAL",
+        "THETA_EAP_REF"
+    )
+
+    corr_acertos_theta = calcular_correlacao_segura(
+        df_proficiencias,
+        "N_ACERTOS",
+        "THETA_EAP"
+    )
+
+    corr_acertos_theta_ref = calcular_correlacao_segura(
+        df_proficiencias_ref,
+        "N_ACERTOS",
+        "THETA_EAP_REF"
+    )
+
+    print("\nPROFICIÊNCIAS")
+    print("-" * 40)
+    print(f"Corr(THETA_EAP, THETA_EAP_REF)     = {corr_theta_est_ref:.6f}")
+    print(f"Corr(NOTA_REAL, THETA_EAP)         = {corr_nota_theta:.6f}")
+    print(f"Corr(NOTA_REAL, THETA_EAP_REF)     = {corr_nota_theta_ref:.6f}")
+    print(f"Corr(N_ACERTOS, THETA_EAP)         = {corr_acertos_theta:.6f}")
+    print(f"Corr(N_ACERTOS, THETA_EAP_REF)     = {corr_acertos_theta_ref:.6f}")
+
+    print("\n" + "=" * 80)
+
+
 
 
 if __name__ == "__main__":
