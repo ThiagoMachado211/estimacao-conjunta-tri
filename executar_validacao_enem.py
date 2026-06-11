@@ -6,6 +6,7 @@ from codigo.configuracoes import (
     USAR_NROWS_TESTE,
     NROWS_TESTE,
     AREA_ENEM_EXECUTAR,
+    LINGUA_ESTRANGEIRA_EXECUTAR,
     CODIGOS_PROVA_EXECUTAR,
     ID_DISCIPLINA_EXECUTAR,
     MINIMO_RESPOSTAS_VALIDAS,
@@ -93,6 +94,12 @@ def calcular_correlacao_segura(df, col_x, col_y):
 
 
 def main():
+    if len(CODIGOS_PROVA_EXECUTAR) != 1:
+        raise ValueError(
+            "Por enquanto, o pipeline aceita apenas um código de prova por execução. "
+            "Use CODIGOS_PROVA_EXECUTAR = [codigo]."
+        )
+
     print("Lendo microdados do ENEM...")
 
     colunas_microdados = [
@@ -137,9 +144,31 @@ def main():
         apenas_presentes=True,
     )
 
+    # ==========================================================
+    # Tratamento específico para Linguagens (apenas a partir de 2010)
+    # ==========================================================
+
+#    if AREA_ENEM_EXECUTAR == "LC":
+#        print("\nFiltrando língua estrangeira...")
+#        df_enem_area = df_enem_area.merge(df_microdados[["NU_INSCRICAO", "TP_LINGUA"]], left_on="INSC", right_on="NU_INSCRICAO", how="left")
+#        print(df_enem_area["TP_LINGUA"].value_counts(dropna=False).sort_index())
+#        df_enem_area = df_enem_area[df_enem_area["TP_LINGUA"] == LINGUA_ESTRANGEIRA_EXECUTAR].copy()
+#        print(
+#            f"\nRegistros após filtro de língua "
+#            f"({LINGUA_ESTRANGEIRA_EXECUTAR}): "
+#            f"{len(df_enem_area)}"
+#        )
+#    else:
+#        print(
+#            "\nÁrea diferente de LC. "
+#            "Nenhum filtro de língua aplicado."
+#        ) 
+
     print(f"Linhas: {df_enem_area.shape[0]}")
     print(f"Colunas: {df_enem_area.shape[1]}")
     print(df_enem_area.head())
+
+
 
     print("---------------------------------------------------------------")
     print("Lendo arquivo de itens do ENEM...")
