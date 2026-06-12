@@ -83,7 +83,7 @@ USAR_TRANSFORMACAO_LINEAR = True
 # Experimento A - Simulado
 # =========================
 
-TAMANHO_AMOSTRA_SIMULADO = 20000
+TAMANHO_AMOSTRA_SIMULADO = 10000
 SERIE_SIMULADO_EXECUTAR = "Ensino Médio - 3º ano"
 
 ID_DISCIPLINA_SIMULADO_EXECUTAR = 4  # MT inicialmente

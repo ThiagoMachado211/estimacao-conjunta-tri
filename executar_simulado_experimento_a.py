@@ -174,6 +174,14 @@ def main():
 
     print("\nConfiguração:")
     print(f"Série/modalidade: {SERIE_SIMULADO_EXECUTAR}")
+
+    nome_grupo = (
+        SERIE_SIMULADO_EXECUTAR
+        .replace(" ", "_")
+        .replace("º", "")
+        .replace("-", "_")
+    )
+
     print(f"ID disciplina: {ID_DISCIPLINA_SIMULADO_EXECUTAR}")
     print(f"Amostra: {TAMANHO_AMOSTRA_SIMULADO}")
 
@@ -745,7 +753,7 @@ def main():
 
     caminho_parametros_enem = (
         PASTA_RESULTADOS_SIMULADO /
-        "parametros_estimados_somente_enem_experimento_a.csv"
+        f"parametros_estimados_somente_enem_{nome_grupo}.csv"
     )
 
     parametros_estimados_enem.to_csv(
@@ -762,7 +770,7 @@ def main():
 
     caminho_comparacao_enem = (
         PASTA_RESULTADOS_SIMULADO /
-        "comparacao_parametros_somente_enem_experimento_a.csv"
+        f"comparacao_parametros_somente_enem_{nome_grupo}.csv"
     )
 
     df_comparacao_enem.to_csv(
@@ -775,6 +783,16 @@ def main():
         df_comparacao_enem,
         "SOMENTE ITENS ENEM"
     )
+
+    print("\n==============================")
+    print("RESUMO DO GRUPO")
+    print("==============================")
+
+    print("Grupo:", SERIE_SIMULADO_EXECUTAR)
+    print("Quantidade de alunos:", len(df_matriz_enem))
+    print("Quantidade de itens:", len(df_comparacao_enem))
+
+
 
 
 if __name__ == "__main__":
