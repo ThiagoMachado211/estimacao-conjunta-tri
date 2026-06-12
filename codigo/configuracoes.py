@@ -36,7 +36,7 @@ USAR_AMOSTRA = True
 TAMANHO_AMOSTRA = 5000
 SEMENTE = 42
 
-MINIMO_RESPOSTAS_VALIDAS = 5
+MINIMO_RESPOSTAS_VALIDAS = 1
 
 # =========================
 # Modelo TRI
@@ -73,3 +73,27 @@ DESVIO_PRIOR = 1
 # =========================
 
 USAR_TRANSFORMACAO_LINEAR = True
+
+
+
+
+
+
+# =========================
+# Experimento A - Simulado
+# =========================
+
+TAMANHO_AMOSTRA_SIMULADO = 20000
+SERIE_SIMULADO_EXECUTAR = "Ensino Médio - 3º ano"
+
+ID_DISCIPLINA_SIMULADO_EXECUTAR = 4  # MT inicialmente
+
+PASTA_DADOS_SIMULADO = PASTA_DADOS / "simulado"
+PASTA_RESULTADOS_SIMULADO = PASTA_RESULTADOS / "simulado"
+
+ARQUIVO_RESPOSTAS_DIA1 = PASTA_DADOS_SIMULADO / "respostas_dia1.csv"
+ARQUIVO_RESPOSTAS_DIA2 = PASTA_DADOS_SIMULADO / "respostas_dia2.csv"
+ARQUIVO_NOTAS_REAIS_SIMULADO = PASTA_DADOS_SIMULADO / "notas_reais.csv"
+ARQUIVO_PARAMETROS_REFERENCIA_SIMULADO = (
+    PASTA_DADOS_SIMULADO / "parametros_referencia.xlsx"
+)

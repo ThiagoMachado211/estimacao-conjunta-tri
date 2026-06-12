@@ -119,3 +119,73 @@ def resumo_matriz_respostas(df_matriz):
         "acertos": acertos,
         "erros": erros,
     }
+
+
+
+def montar_matriz_respostas_simulado(
+    df_respostas,
+    id_disciplina,
+    coluna_id="INSC",
+    coluna_resposta="TX_RESPOSTA",
+    coluna_gabarito="GABARITO",
+):
+    """
+    Monta matriz 0/1/NaN para o simulado.
+
+    Entrada esperada:
+        INSC
+        ID_DISCIPLINA
+        GABARITO
+        TX_RESPOSTA
+
+    Saída:
+        INSC
+        ID_DISCIPLINA
+        Q1...Q45
+    """
+
+    df = df_respostas.copy()
+
+    df = df[
+        df["ID_DISCIPLINA"] == id_disciplina
+    ].copy()
+
+    registros = []
+
+    for _, linha in df.iterrows():
+        respostas = linha[coluna_resposta]
+        gabarito = linha[coluna_gabarito]
+
+        if pd.isna(respostas) or pd.isna(gabarito):
+            continue
+
+        respostas = str(respostas).strip().upper()
+        gabarito = str(gabarito).strip().upper()
+
+        n_itens = min(len(respostas), len(gabarito), 45)
+
+        registro = {
+            "INSC": linha[coluna_id],
+            "ID_DISCIPLINA": id_disciplina,
+        }
+
+        for i in range(45):
+            if i < n_itens:
+                registro[f"Q{i + 1}"] = corrigir_resposta(
+                    respostas[i],
+                    gabarito[i]
+                )
+            else:
+                registro[f"Q{i + 1}"] = np.nan
+
+        registros.append(registro)
+
+    df_matriz = pd.DataFrame(registros)
+
+    colunas_q = [f"Q{i}" for i in range(1, 46)]
+
+    df_matriz = df_matriz[
+        ["INSC", "ID_DISCIPLINA"] + colunas_q
+    ]
+
+    return df_matriz
