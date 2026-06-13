@@ -7,12 +7,26 @@ from sklearn.metrics import r2_score
 
 
 ARQUIVOS_GRUPOS = {
-    "TODOS": "resultados/simulado/comparacao_parametros_somente_enem_experimento_a.csv",
-    "3EM_REGULAR": "resultados/simulado/comparacao_parametros_enem_3em_regular.csv",
-    "2EM_REGULAR": "resultados/simulado/comparacao_parametros_enem_2em_regular.csv",
-    "3EM_EJA": "resultados/simulado/comparacao_parametros_enem_3em_eja.csv",
-    "2EM_EJA": "resultados/simulado/comparacao_parametros_enem_2em_eja.csv",
+    "3EM_REGULAR":
+        "resultados/simulado/comparacao_parametros_somente_enem_Ensino_Médio___3_ano.csv",
+
+    "2EM_REGULAR":
+        "resultados/simulado/comparacao_parametros_somente_enem_Ensino_Médio___2_ano.csv",
+
+    "3EM_EJA":
+        "resultados/simulado/comparacao_parametros_somente_enem_EJA___3_Ano.csv",
+
+    "2EM_EJA":
+        "resultados/simulado/comparacao_parametros_somente_enem_EJA___2_Ano.csv",
 }
+
+#ARQUIVOS_GRUPOS = {
+#    "TODOS": "resultados/simulado/comparacao_parametros_somente_enem_experimento_a.csv",
+#    "3EM_REGULAR": "resultados/simulado/comparacao_parametros_enem_3em_regular.csv",
+#    "2EM_REGULAR": "resultados/simulado/comparacao_parametros_enem_2em_regular.csv",
+#    "3EM_EJA": "resultados/simulado/comparacao_parametros_enem_3em_eja.csv",
+#    "2EM_EJA": "resultados/simulado/comparacao_parametros_enem_2em_eja.csv",
+#}
 
 ARQUIVO_SAIDA_RESUMO = "resultados/simulado/teste_populacao_resumo.csv"
 ARQUIVO_SAIDA_ITENS = "resultados/simulado/teste_populacao_itens.csv"
